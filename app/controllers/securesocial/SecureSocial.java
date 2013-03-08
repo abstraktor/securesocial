@@ -42,6 +42,8 @@ public class SecureSocial extends Controller {
     private static final String SECURESOCIAL_LOGIN_REDIRECT = "securesocial.login.redirect";
     private static final String SECURESOCIAL_LOGOUT_REDIRECT = "securesocial.logout.redirect";
     private static final String SECURESOCIAL_SECURE_SOCIAL_LOGIN = "securesocial.SecureSocial.login";
+    private static final String SECURESOCIAL_UNAUTHORIZED_ACTION = "securesocial.unauthorized.action";
+
 
     // Strings used from multiple places
     public static final String USERNAME = "username";
@@ -63,17 +65,27 @@ public class SecureSocial extends Controller {
         if ( userId == null ) {
             final String originalUrl = request.method.equals(GET) ? request.url : ROOT;
             flash.put(ORIGINAL_URL, originalUrl);
-            login();
+	    unauthorizedAction();
         } else {
             final SocialUser user = loadCurrentUser(userId);
             if ( user == null ) {
                // the user had the cookies but the UserService can't find it ...
                // it must have been erased, redirect to login again.
                clearUserId();
-               login();
+               unauthorizedAction();
            }
         }
     }
+
+
+    static void unauthorizedAction() {
+        final String action = Play.configuration.getProperty(SECURESOCIAL_UNAUTHORIZED_ACTION);
+	if("unauthorized".equals(action)) {
+	    unauthorized();
+	}
+	login();
+    }
+
 
     static SocialUser loadCurrentUser() {
         UserId id = getUserId();
