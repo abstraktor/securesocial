@@ -80,10 +80,10 @@ public class SecureSocial extends Controller {
 
     static void unauthorizedAction() {
         final String action = Play.configuration.getProperty(SECURESOCIAL_UNAUTHORIZED_ACTION);
-	if("unauthorized".equals(action)) {
-	    unauthorized();
-	}
-	login();
+        if("forbidden".equals(action)) {
+        	forbidden();
+        }
+        login();
     }
 
 
