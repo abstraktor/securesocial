@@ -77,11 +77,14 @@ public class UsernamePasswordProvider extends IdentityProvider
             SecureSocial.login();
         }
 
-        if ( !user.isEmailVerified) {
-                flash.error(Messages.get(SECURESOCIAL_ACCOUNT_NOT_ACTIVE));
-                SecureSocial.login();
-            }
-
+        // Deactivated because
+        // for timum, we verify this in
+        // the AuthenticationAuthorisationInterceptor
+        // if ( !user.isEmailVerified) {
+        //     flash.error(Messages.get(SECURESOCIAL_ACCOUNT_NOT_ACTIVE));
+        //     SecureSocial.login();
+        // }
+        
         if ( user == null || !passwordMatches(Scope.Params.current().get(PASSWORD), user.password)) {
             flash.error(Messages.get(SECURESOCIAL_WRONG_USER_PASS));
             SecureSocial.login();
