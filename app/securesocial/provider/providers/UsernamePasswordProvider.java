@@ -62,7 +62,7 @@ public class UsernamePasswordProvider extends IdentityProvider
         if ( hasErrors ) {
             Scope.Flash.current().put(USER_NAME, userName);
             validation.keep();
-            SecureSocial.login();
+            throw new AuthenticationException();
         }
         //
         UserId id = new UserId();
@@ -72,10 +72,10 @@ public class UsernamePasswordProvider extends IdentityProvider
 
         Scope.Flash flash = Scope.Flash.current();
 
-        if ( user == null ) {
-            flash.error(Messages.get(SECURESOCIAL_BAD_USER_PASSWORD_COMBINATION));
-            SecureSocial.login();
-        }
+        // if ( user == null ) {
+        //     flash.error(Messages.get(SECURESOCIAL_BAD_USER_PASSWORD_COMBINATION));
+        //     SecureSocial.login();
+        // }
 
         // Deactivated because
         // for timum, we verify this in
@@ -86,8 +86,9 @@ public class UsernamePasswordProvider extends IdentityProvider
         // }
         
         if ( user == null || !passwordMatches(Scope.Params.current().get(PASSWORD), user.password)) {
-            flash.error(Messages.get(SECURESOCIAL_WRONG_USER_PASS));
-            SecureSocial.login();
+            throw new AuthenticationException();
+        //     flash.error(Messages.get(SECURESOCIAL_WRONG_USER_PASS));
+        //     SecureSocial.login();
         }
         return user;
     }

@@ -34,7 +34,8 @@ POST    /reset/execute           securesocial.PasswordResetController.doChange
 GET     /login                  securesocial.SecureSocial.login
 GET     /logout                 securesocial.SecureSocial.logout
 GET     /{type}                 securesocial.SecureSocial.authenticate
-POST    /p/{type}               securesocial.SecureSocial.authByPost
+POST    /p/{<[^/.]+>type}               securesocial.SecureSocial.authByPost
+POST    /p/{<[^/.]+>type}.{format}      securesocial.SecureSocial.authByPostWithFormat
 POST    /p                      securesocial.SecureSocial.authByPost
 
 

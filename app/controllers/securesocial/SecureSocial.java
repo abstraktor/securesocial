@@ -57,7 +57,7 @@ public class SecureSocial extends Controller {
     /**
      * Checks if there is a user logged in and redirects to the login page if not.
      */
-    @Before(unless={"login", "authenticate", "authByPost", "logout"})
+    @Before(unless={"login", "authenticate", "authByPost", "authByPostWithFormat", "logout"})
     static void checkAccess() throws Throwable
     {
         final UserId userId = getUserId();
@@ -213,6 +213,10 @@ public class SecureSocial extends Controller {
         doAuthenticate(type);
     }
 
+    public static void authByPostWithFormat(ProviderType type) {
+        doAuthenticate(type);
+    }
+
     private static void doAuthenticate(ProviderType type) {
         if ( type == null ) {
             Logger.error("Provider type was missing in request");
@@ -229,16 +233,24 @@ public class SecureSocial extends Controller {
             setUserId(user);
             originalUrl = flash.get(ORIGINAL_URL);
         } catch ( Exception e ) {
-            e.printStackTrace();
-            Logger.error(e, "Error authenticating user");
-            if ( flash.get(ERROR) == null ) {
-                flash.error(Messages.get(SECURESOCIAL_AUTH_ERROR));
+            if("json".equals(request.format)){
+                forbidden("");
+            } else {
+                e.printStackTrace();
+                if ( flash.get(ERROR) == null ) {
+                    flash.error(Messages.get(SECURESOCIAL_AUTH_ERROR));
+                }
+                flash.keep(ORIGINAL_URL);
+                login();
             }
-            flash.keep(ORIGINAL_URL);
-            login();
         }
-        final String redirectTo = Play.configuration.getProperty(SECURESOCIAL_LOGIN_REDIRECT, ROOT);
-        redirect( originalUrl != null ? originalUrl : redirectTo);
+
+        if("json".equals(request.format)){
+            ok();
+        } else {
+            final String redirectTo = Play.configuration.getProperty(SECURESOCIAL_LOGIN_REDIRECT, ROOT);
+            redirect( originalUrl != null ? originalUrl : redirectTo);
+        }
     }
 
     /**
