@@ -33,7 +33,6 @@ public class UsernamePasswordProvider extends IdentityProvider
     private static final String USER_NAME = "userName";
     private static final String PASSWORD = "password";
     private static final String SECURESOCIAL_REQUIRED = "securesocial.required";
-    private static final String SECURESOCIAL_BAD_USER_PASSWORD_COMBINATION = "securesocial.badUserPasswordCombination";
     private static final String SECURESOCIAL_ACCOUNT_NOT_ACTIVE = "securesocial.accountNotActive";
     private static final String SECURESOCIAL_WRONG_USER_PASS = "securesocial.wrongUserPass";
 
@@ -59,23 +58,11 @@ public class UsernamePasswordProvider extends IdentityProvider
             hasErrors = true;
         }
 
-        if ( hasErrors ) {
-            Scope.Flash.current().put(USER_NAME, userName);
-            validation.keep();
-            throw new AuthenticationException();
-        }
         //
         UserId id = new UserId();
         id.id = Scope.Params.current().get(USER_NAME);
         id.provider = ProviderType.userpass;
         SocialUser user = UserService.find(id);
-
-        Scope.Flash flash = Scope.Flash.current();
-
-        // if ( user == null ) {
-        //     flash.error(Messages.get(SECURESOCIAL_BAD_USER_PASSWORD_COMBINATION));
-        //     SecureSocial.login();
-        // }
 
         // Deactivated because
         // for timum, we verify this in
@@ -85,10 +72,17 @@ public class UsernamePasswordProvider extends IdentityProvider
         //     SecureSocial.login();
         // }
         
-        if ( user == null || !passwordMatches(Scope.Params.current().get(PASSWORD), user.password)) {
+        if (!hasErrors  && (user == null || !passwordMatches(Scope.Params.current().get(PASSWORD), user.password))) {
+            validation.addError(USER_NAME, Messages.get(SECURESOCIAL_REQUIRED));
+            validation.addError(PASSWORD, Messages.get(SECURESOCIAL_REQUIRED));
+            hasErrors = true;
+        }
+
+        if ( hasErrors ) {
+            Scope.Flash.current().put(USER_NAME, userName);
+            validation.keep();
+            Scope.Flash.current().error(Messages.get(SECURESOCIAL_WRONG_USER_PASS));
             throw new AuthenticationException();
-        //     flash.error(Messages.get(SECURESOCIAL_WRONG_USER_PASS));
-        //     SecureSocial.login();
         }
         return user;
     }
