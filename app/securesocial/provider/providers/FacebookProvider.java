@@ -29,12 +29,15 @@ import java.util.Map;
  */
 public class FacebookProvider extends OAuth2Provider
 {
-    private static final String ME_API = "https://graph.facebook.com/me?fields=name,picture,email&access_token=%s";
+    private static final String ME_API = "https://graph.facebook.com/me?fields=picture,username,name,first_name,last_name,email&access_token=%s";
     private static final String ERROR = "error";
     private static final String MESSAGE = "message";
     private static final String TYPE = "type";
     private static final String ID = "id";
     private static final String NAME = "name";
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+    private static final String USERNAME = "username";
     private static final String PICTURE = "picture";
     private static final String EMAIL = "email";
     public static final String DATA = "data";
@@ -65,6 +68,9 @@ public class FacebookProvider extends OAuth2Provider
         //
         JsonElement picture = me.get(PICTURE);
         user.avatarUrl = !picture.isJsonObject() ? picture.getAsString() : picture.getAsJsonObject().get(DATA).getAsJsonObject().get(URL).getAsString();
+        user.userName = me.get(USERNAME).getAsString();
+        user.firstName = me.get(FIRST_NAME).getAsString();
+        user.lastName = me.get(LAST_NAME).getAsString();
         user.email = me.get(EMAIL).getAsString();
     }
 }

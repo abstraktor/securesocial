@@ -56,6 +56,9 @@ public class GoogleOAuth2Provider extends IdentityProvider {
     private static final String NAME = "name";
     private static final String PICTURE = "picture";
     private static final String EMAIL = "email";
+    private static final String FIRST_NAME = "given_name";
+    private static final String LAST_NAME = "family_name";
+    private static final String USERNAME = "username";
 
     // Configuration propreties keys
     private static final String SCOPE = "scope";
@@ -141,7 +144,7 @@ public class GoogleOAuth2Provider extends IdentityProvider {
         if (error != null) {
             final String message = error.get(MESSAGE).getAsString();
             final String type = error.get(TYPE).getAsString();
-            Logger.error("Error retrieving profile information from Facebook. Error type: %s, message: %s.", type, message);
+            Logger.error("Error retrieving profile information from Google. Error type: %s, message: %s.", type, message);
             throw new AuthenticationException();
         }
 
@@ -150,5 +153,8 @@ public class GoogleOAuth2Provider extends IdentityProvider {
         user.displayName = me.get(NAME).getAsString();
         user.avatarUrl = me.get(PICTURE).getAsString();
         user.email = me.get(EMAIL).getAsString();
+        user.firstName = me.get(FIRST_NAME).getAsString();
+        user.lastName = me.get(LAST_NAME).getAsString();
+        user.userName = me.get(FIRST_NAME).getAsString() + "_" + me.get(LAST_NAME).getAsString();
     }
 }

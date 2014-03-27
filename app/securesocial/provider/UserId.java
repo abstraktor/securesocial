@@ -30,4 +30,12 @@ public class UserId implements java.io.Serializable {
      * The provider this user belongs to.
      */
     public ProviderType provider;
+
+    public UserId() {
+    }
+    
+    public UserId(final String id, final ProviderType provider) {
+    	this.id = id;
+    	this.provider = provider;
+    }
 }

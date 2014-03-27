@@ -34,6 +34,12 @@ public class SocialUser implements java.io.Serializable {
      */
     public String displayName;
 
+    public String firstName;
+
+    public String lastName;
+
+    public String userName;
+
     /**
      * The user's email
      */
