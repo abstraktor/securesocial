@@ -23,12 +23,20 @@ import play.libs.WS;
 import securesocial.provider.*;
 
 import java.util.Map;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * A provider for Foursquare 
  */
 public class FoursquareProvider extends OAuth2Provider {
-    private static final String SELF_API = "https://api.foursquare.com/v2/users/self?oauth_token=%s";
+    private static final String SELF_API;
+    static {
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        String s = format.format(date);
+        SELF_API = "https://api.foursquare.com/v2/users/self?v=" + s + "&oauth_token=%s";
+    }
     private static final String META = "meta";
     private static final String CODE = "code";
     private static final String ERROR_TYPE = "errorType";
@@ -70,12 +78,15 @@ public class FoursquareProvider extends OAuth2Provider {
         }
 
         user.id.id = userInfo.get(ID).getAsString();
-        user.displayName = userInfo.get(FIRST_NAME).getAsString();
-        final JsonElement lastName = userInfo.get(LAST_NAME);
-        if ( lastName != null ) {
-            user.displayName = fullName(user.displayName, lastName.getAsString());
-        }
-        user.avatarUrl = userInfo.get(PHOTO).getAsString();
+        user.firstName = userInfo.get(FIRST_NAME).getAsString();
+        user.lastName = userInfo.get(LAST_NAME).getAsString();
+        user.userName = user.firstName + "_" + user.lastName;
+        user.displayName = fullName(user.firstName, user.lastName);
+
+        final JsonObject photo = userInfo.getAsJsonObject(PHOTO);
+        if( photo != null)
+            user.avatarUrl = photo.get("prefix").getAsString() + photo.get("suffix").getAsString();
+
         final JsonObject contact = userInfo.getAsJsonObject(CONTACT);
         if ( contact != null ) {
             final JsonElement userEmail = contact.get(EMAIL);
