@@ -181,11 +181,13 @@ public class SecureSocial extends Controller {
      * The action for the login page.
      */
     public static void login() {
+        if(params.get("origin") != null && flash.get("originalUrl") == null)
+            flash.put("originalUrl", params.get("origin"));
+
         final Collection providers = ProviderRegistry.all();
         flash.keep(ORIGINAL_URL);
         boolean userPassEnabled = ProviderRegistry.get(ProviderType.userpass) != null;
         render(providers, userPassEnabled);
-
     }
 
     /**
